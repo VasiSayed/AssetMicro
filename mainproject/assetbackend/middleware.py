@@ -7,3 +7,4 @@ class TenantMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
         set_current_tenant(None)
         return response
+    

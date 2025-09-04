@@ -11,21 +11,47 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-import os
 import environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = '...'
-
 env = environ.Env()
 environ.Env.read_env(str(BASE_DIR / '.env'))
+
+SECRET_KEY = env.str("SECRET_KEY")
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "SERIALIZER": "django_redis.serializers.json.JSONSerializer", 
+        }
+    }
+}
+
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": ["assetbackend.auth.ExternalJWTAuthentication"],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+}
 
 
 
 DEBUG = True
+Atharva="192.168.29.168"
+ALLOWED_HOSTS = [Atharva,"*"]
 
-ALLOWED_HOSTS = []
+Ip="http://127.0.0.1:5174"
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:5173",
+    Ip
+]
+
+CORS_ALLOW_CREDENTIALS = True
 
 DATABASE_ROUTERS = ["assetbackend.db_router.MultiTenantRouter"]
 
@@ -51,11 +77,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'api',
     'corsheaders',
-    'config',
     
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
 
 import os
 
@@ -100,13 +124,6 @@ WSGI_APPLICATION = 'assetbackend.wsgi.application'
 
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': str(BASE_DIR / 'db.sqlite3'),
-    }
-}
-
 
 
 # Password validation
@@ -141,9 +158,4 @@ USE_TZ = True
 
 
 
-
-STATIC_URL = 'static/'
-
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
